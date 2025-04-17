@@ -5,6 +5,9 @@ on:
     - cron: '0 */6 * * *'  # Run every 6 hours
   workflow_dispatch:  # Allows you to run this manually
 
+permissions:
+  contents: write  # This gives the workflow permission to write to the repository
+
 jobs:
   sync-strava-data:
     runs-on: ubuntu-latest
