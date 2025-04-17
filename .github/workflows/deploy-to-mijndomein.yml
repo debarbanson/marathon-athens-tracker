@@ -34,6 +34,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./out/
           server-dir: /httpdocs/marathon/
-          protocol: ftps
+          protocol: ftp
           security: loose
-          timeout: 120000 
+          timeout: 180000
+          dangerous-clean-slate: true 
