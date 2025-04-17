@@ -28,8 +28,10 @@ const formatNumber = (num: number): string => {
 };
 
 export default function Home() {
-  // Calculate progress percentage
-  const progressPercentage = (statsData.totalDistance / statsData.totalGoalDistance) * 100
+  // Calculate progress percentage - ensure values are treated as numbers
+  const totalDistance = Number(statsData.totalDistance);
+  const totalGoalDistance = Number(statsData.totalGoalDistance);
+  const progressPercentage = (totalDistance / totalGoalDistance) * 100;
   
   // State to track if we're on mobile
   const [isMobile, setIsMobile] = useState(false)
@@ -67,8 +69,8 @@ export default function Home() {
         {/* Map section - full width on mobile, 2/3 on desktop */}
         <div className={`${isMobile ? 'w-full h-[60vh]' : 'w-2/3 h-full'} relative`}>
           <MapSection 
-            totalDistance={statsData.totalDistance} 
-            totalGoalDistance={statsData.totalGoalDistance}
+            totalDistance={totalDistance} 
+            totalGoalDistance={totalGoalDistance}
             progressPercentage={progressPercentage}
             showProgressBar={false} // Hide the progress bar on the map since we'll show it in the content section
           />
@@ -79,18 +81,18 @@ export default function Home() {
           <div className="flex-1 overflow-y-auto p-5 space-y-6">
             {/* Stats Panel */}
             <StatsPanel 
-              totalDistance={statsData.totalDistance}
+              totalDistance={totalDistance}
               averagePace={statsData.averagePace}
               totalRuns={statsData.totalRuns}
               totalTime={statsData.totalTime}
-              totalGoalDistance={statsData.totalGoalDistance}
+              totalGoalDistance={totalGoalDistance}
             />
             
             {/* Progress Section */}
             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 border border-slate-200 dark:border-slate-700">
               <div className="flex justify-between mb-2 text-sm font-medium">
                 <span>Progress Toward Goal ({Math.round(progressPercentage)}%)</span>
-                <span>{formatNumber(statsData.totalDistance)} of {formatNumber(statsData.totalGoalDistance)} km</span>
+                <span>{formatNumber(totalDistance)} of {formatNumber(totalGoalDistance)} km</span>
               </div>
               <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                 <motion.div 
