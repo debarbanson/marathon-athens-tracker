@@ -31,6 +31,7 @@ interface RunsProps {
 
 // Helper function to fix month names
 const fixMonthName = (dateStr: string): string => {
+  // First fix any spelling errors
   const corrections: Record<string, string> = {
     'Aprilil': 'April',
     'Marchch': 'March',
@@ -52,10 +53,34 @@ const fixMonthName = (dateStr: string): string => {
     'Decemeber': 'December'
   };
 
+  // Then expand any abbreviated month names
+  const expansions: Record<string, string> = {
+    'Jan': 'January',
+    'Feb': 'February',
+    'Mar': 'March',
+    'Apr': 'April',
+    'Jun': 'June',
+    'Jul': 'July',
+    'Aug': 'August',
+    'Sep': 'September',
+    'Sept': 'September',
+    'Oct': 'October',
+    'Nov': 'November',
+    'Dec': 'December'
+  };
+
   let fixedString = dateStr;
+  
+  // Fix spelling errors
   Object.entries(corrections).forEach(([incorrect, correct]) => {
     const regex = new RegExp(incorrect, 'gi');
     fixedString = fixedString.replace(regex, correct);
+  });
+  
+  // Expand abbreviated months
+  Object.entries(expansions).forEach(([abbr, full]) => {
+    const regex = new RegExp(`\\b${abbr}\\b`, 'g');
+    fixedString = fixedString.replace(regex, full);
   });
   
   return fixedString;
@@ -117,13 +142,15 @@ const getRunColor = (type: string): string => {
   const typeColors: Record<string, string> = {
     'Long Run': '#4338ca', // indigo
     'Easy': '#0891b2', // cyan
-    'Recovery': '#84cc16', // lime
-    'Tempo': '#ea580c', // orange
-    'Speed': '#dc2626', // red
-    'Race': '#7c3aed', // violet
+    'Recovery': '#0891b2', // cyan
+    'Tempo': '#2563eb', // blue
+    'Speed': '#2563eb', // blue
+    'Race': '#3b82f6', // blue
+    'Short Run': '#3b82f6', // blue
+    'Medium Run': '#2563eb', // blue
   };
   
-  return typeColors[type] || '#6b7280'; // default gray if type not found
+  return typeColors[type] || '#3b82f6'; // default blue if type not found
 };
 
 // Helper function to determine color based on run type
@@ -131,15 +158,15 @@ const getRunTypeColor = (type: string) => {
   const typeLower = type.toLowerCase()
   
   if (typeLower.includes('easy') || typeLower.includes('recovery')) {
-    return 'bg-green-100 text-green-800'
+    return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
   } else if (typeLower.includes('tempo') || typeLower.includes('threshold')) {
-    return 'bg-orange-100 text-orange-800'
+    return 'bg-blue-200 text-blue-800 dark:bg-blue-800 dark:text-blue-200'
   } else if (typeLower.includes('interval') || typeLower.includes('speed')) {
-    return 'bg-red-100 text-red-800'
+    return 'bg-blue-300 text-blue-800 dark:bg-blue-700 dark:text-blue-200'
   } else if (typeLower.includes('long')) {
-    return 'bg-blue-100 text-blue-800'
+    return 'bg-blue-400 text-blue-800 dark:bg-blue-600 dark:text-blue-200'
   } else {
-    return 'bg-purple-100 text-purple-800'
+    return 'bg-blue-200 text-blue-800 dark:bg-blue-800 dark:text-blue-200'
   }
 }
 
@@ -152,7 +179,7 @@ const CompletedRunRow = ({ run }: { run: CompletedRun }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="rounded-xl p-4 mb-4 bg-white shadow-md dark:bg-gray-800 border-l-4"
+      className="rounded-xl p-4 mb-4 bg-white shadow-md dark:bg-slate-800 dark:shadow-none dark:border dark:border-slate-700 border-l-4"
       style={{ borderLeftColor: color }}
     >
       <div className="grid grid-cols-[1fr_2fr] gap-4">
@@ -161,7 +188,7 @@ const CompletedRunRow = ({ run }: { run: CompletedRun }) => {
           <span className="text-sm text-gray-500 dark:text-gray-400">
             {dayOfWeek}
           </span>
-          <span className="font-semibold">
+          <span className="font-semibold dark:text-white">
             {monthAndDay}
           </span>
         </div>
@@ -170,22 +197,22 @@ const CompletedRunRow = ({ run }: { run: CompletedRun }) => {
         <div className="grid grid-cols-3 gap-2">
           <div className="flex flex-col">
             <span className="text-xs text-gray-500 dark:text-gray-400">Type</span>
-            <span className="font-medium">{run.type}</span>
+            <span className="font-medium dark:text-white">{run.type}</span>
           </div>
           
           <div className="flex flex-col">
             <span className="text-xs text-gray-500 dark:text-gray-400">Distance</span>
-            <span className="font-medium">{run.distance} km</span>
+            <span className="font-medium dark:text-white">{run.distance} km</span>
           </div>
           
           <div className="flex flex-col">
             <span className="text-xs text-gray-500 dark:text-gray-400">Time</span>
-            <span className="font-medium">{run.duration}</span>
+            <span className="font-medium dark:text-white">{run.duration}</span>
           </div>
           
           <div className="flex flex-col col-span-3">
             <span className="text-xs text-gray-500 dark:text-gray-400">Pace</span>
-            <span className="font-medium">{run.pace}/km</span>
+            <span className="font-medium dark:text-white">{run.pace}/km</span>
           </div>
         </div>
       </div>
@@ -204,13 +231,16 @@ const UpcomingRuns: React.FC<RunsProps> = ({
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  const filteredUpcomingRuns = upcomingRunsData.filter(run => {
-    // Normalize dates for comparison
-    const runDate = normalizeDate(run.displayDate)
-    
-    // Check if this run is in the future
-    return runDate >= today
-  })
+  // Create new filtered array on each render to avoid state issues
+  const filteredUpcomingRuns = React.useMemo(() => {
+    return upcomingRunsData.filter(run => {
+      // Normalize dates for comparison
+      const runDate = normalizeDate(run.displayDate)
+      
+      // Check if this run is in the future
+      return runDate >= today
+    })
+  }, [upcomingRunsData, today]);
 
   return (
     <div>
@@ -241,8 +271,9 @@ const UpcomingRuns: React.FC<RunsProps> = ({
       {/* Tab content - scrollable container */}
       <div className="max-h-[400px] overflow-y-auto pr-2">
         {activeTab === 'upcoming' ? (
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             <motion.div
+              key="upcoming"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -260,25 +291,25 @@ const UpcomingRuns: React.FC<RunsProps> = ({
                     const runColor = getRunTypeColor(run.type)
                     
                     return (
-                      <div key={run.id} className="run-card animate-fade-in p-4 bg-white rounded-lg shadow-md">
+                      <div key={run.id} className="run-card animate-fade-in p-4 bg-white dark:bg-slate-800 rounded-lg shadow-md dark:shadow-none dark:border dark:border-slate-700">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <div className="text-gray-500 text-sm">{dayOfWeek}</div>
-                            <div className="font-semibold">{monthAndDay}</div>
+                            <div className="text-gray-500 dark:text-gray-400 text-sm">{dayOfWeek}</div>
+                            <div className="font-semibold dark:text-white">{monthAndDay}</div>
                           </div>
                           <div className={`run-type text-sm font-semibold px-2 py-1 rounded ${runColor}`}>
                             {run.type}
                           </div>
                         </div>
-                        <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                        <div className="mt-2 grid grid-cols-1 gap-x-4 gap-y-1">
                           <div className="text-sm">
-                            <span className="text-gray-500">Distance:</span> {run.distance}km
+                            <span className="text-gray-500 dark:text-gray-400">Distance:</span> <span className="dark:text-white">{run.distance}km</span>
                           </div>
                           <div className="text-sm">
-                            <span className="text-gray-500">Time:</span> {run.predictedTime}
+                            <span className="text-gray-500 dark:text-gray-400">Time:</span> <span className="dark:text-white">{run.predictedTime}</span>
                           </div>
-                          <div className="text-sm col-span-2">
-                            <span className="text-gray-500">Goal:</span> {run.tag}
+                          <div className="text-sm">
+                            <span className="text-gray-500 dark:text-gray-400">Goal:</span> <span className="dark:text-white">{run.tag}</span>
                           </div>
                         </div>
                       </div>
@@ -293,8 +324,9 @@ const UpcomingRuns: React.FC<RunsProps> = ({
             </motion.div>
           </AnimatePresence>
         ) : (
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             <motion.div
+              key="completed"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
