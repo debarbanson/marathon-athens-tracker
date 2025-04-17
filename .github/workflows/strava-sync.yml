@@ -1,0 +1,269 @@
+name: Strava Data Sync
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Run every 6 hours
+  workflow_dispatch:  # Allows you to run this manually
+
+jobs:
+  sync-strava-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          npm install axios
+          npm ci
+
+      - name: Fetch Strava data
+        run: |
+          cat > fetch-strava.js << 'EOF'
+          const axios = require('axios');
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Ensure directories exist
+          const dataDir = path.join(process.cwd(), 'src', 'data');
+          
+          async function main() {
+            try {
+              console.log('Starting Strava data sync...');
+              
+              // Get a fresh access token
+              console.log('Getting fresh access token...');
+              const tokenResponse = await axios.post('https://www.strava.com/oauth/token', {
+                client_id: process.env.STRAVA_CLIENT_ID,
+                client_secret: process.env.STRAVA_CLIENT_SECRET,
+                refresh_token: process.env.STRAVA_REFRESH_TOKEN,
+                grant_type: 'refresh_token'
+              });
+              
+              const accessToken = tokenResponse.data.access_token;
+              console.log('Access token obtained.');
+              
+              // Get activities (since April 7, 2025)
+              console.log('Fetching activities...');
+              const since = Math.floor(new Date('2025-04-07').getTime() / 1000);
+              const activitiesResponse = await axios.get(
+                `https://www.strava.com/api/v3/athlete/activities?after=${since}&per_page=100`,
+                { headers: { 'Authorization': `Bearer ${accessToken}` } }
+              );
+              
+              // Filter for runs only
+              const runs = activitiesResponse.data.filter(activity => activity.type === 'Run');
+              console.log(`Found ${runs.length} runs.`);
+              
+              // Read existing files
+              console.log('Reading existing JSON files...');
+              const completedRunsPath = path.join(dataDir, 'completedRuns.json');
+              const upcomingRunsPath = path.join(dataDir, 'upcomingRuns.json');
+              const statsPath = path.join(dataDir, 'stats.json');
+              
+              let completedRuns = JSON.parse(fs.readFileSync(completedRunsPath, 'utf8'));
+              let upcomingRuns = JSON.parse(fs.readFileSync(upcomingRunsPath, 'utf8'));
+              let stats = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
+              
+              // Format completed runs data
+              const newCompletedRuns = runs.map((run) => {
+                const startDate = new Date(run.start_date);
+                
+                // Find if this run matches an upcoming run
+                const matchingUpcomingRun = upcomingRuns.find(upcoming => {
+                  const upcomingDate = new Date(upcoming.date);
+                  return upcomingDate.toDateString() === startDate.toDateString();
+                });
+                
+                // Calculate run type and planned distance
+                let runType = 'Short Run';
+                let tag = 'short';
+                let plannedDistance = run.distance / 1000;
+                let predictedTime = formatDuration(run.moving_time);
+                let predictedPace = calculatePace(run.moving_time, run.distance / 1000);
+                
+                if (matchingUpcomingRun) {
+                  runType = matchingUpcomingRun.type;
+                  tag = matchingUpcomingRun.tag.toLowerCase();
+                  plannedDistance = matchingUpcomingRun.distance;
+                  if (matchingUpcomingRun.predictedTime) {
+                    predictedTime = matchingUpcomingRun.predictedTime;
+                    
+                    // Convert HH:MM:SS to seconds for comparison
+                    const predictedParts = predictedTime.split(':').map(Number);
+                    let predictedSeconds = 0;
+                    if (predictedParts.length === 3) {
+                      predictedSeconds = predictedParts[0] * 3600 + predictedParts[1] * 60 + predictedParts[2];
+                    } else {
+                      predictedSeconds = predictedParts[0] * 60 + predictedParts[1];
+                    }
+                    
+                    predictedPace = calculatePace(predictedSeconds, plannedDistance);
+                  }
+                } else if (run.name.toLowerCase().includes('long')) {
+                  runType = 'Long Run';
+                  tag = 'long';
+                } else if (run.name.toLowerCase().includes('interval')) {
+                  runType = 'Interval Run';
+                  tag = 'interval';
+                } else if (run.name.toLowerCase().includes('medium')) {
+                  runType = 'Medium Run';
+                  tag = 'medium';
+                }
+                
+                // Calculate if overachieved
+                const actualDistance = (run.distance / 1000).toFixed(2);
+                const overachievedDistance = parseFloat(actualDistance) > parseFloat(plannedDistance);
+                
+                // Convert durations to seconds for pace comparison
+                const actualPaceParts = calculatePace(run.moving_time, run.distance / 1000).split(':').map(Number);
+                const actualPaceSeconds = actualPaceParts[0] * 60 + actualPaceParts[1];
+                
+                const predictedPaceParts = predictedPace.split(':').map(Number);
+                const predictedPaceSeconds = predictedPaceParts[0] * 60 + predictedPaceParts[1];
+                
+                const overachievedPace = actualPaceSeconds < predictedPaceSeconds;
+                
+                return {
+                  id: completedRuns.length + 1, // Assign sequential ID
+                  date: run.start_date,
+                  displayDate: startDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  }),
+                  type: runType,
+                  distance: parseFloat(actualDistance),
+                  plannedDistance: parseFloat(plannedDistance),
+                  tag: tag,
+                  duration: formatDuration(run.moving_time),
+                  pace: calculatePace(run.moving_time, run.distance / 1000),
+                  predictedTime: predictedTime,
+                  predictedPace: predictedPace,
+                  overachievedDistance: overachievedDistance,
+                  overachievedPace: overachievedPace
+                };
+              });
+              
+              // Only add runs that don't already exist in completedRuns
+              console.log('Checking for new runs...');
+              const stravaActivityIds = new Set(runs.map(run => run.id.toString()));
+              const existingIds = new Set(completedRuns.map(run => run.stravaId?.toString()));
+              
+              const trulyNewRuns = newCompletedRuns.filter(run => {
+                const stravaId = runs.find(r => 
+                  new Date(r.start_date).toDateString() === new Date(run.date).toDateString()
+                )?.id;
+                return stravaId && !existingIds.has(stravaId.toString());
+              });
+              
+              console.log(`Found ${trulyNewRuns.length} new runs to add.`);
+              
+              // Add Strava IDs to the new runs
+              trulyNewRuns.forEach(run => {
+                const matchingRun = runs.find(r => 
+                  new Date(r.start_date).toDateString() === new Date(run.date).toDateString()
+                );
+                if (matchingRun) {
+                  run.stravaId = matchingRun.id;
+                }
+              });
+              
+              // Update completed runs
+              const updatedCompletedRuns = [...completedRuns, ...trulyNewRuns];
+              
+              // Sort by date (newest first)
+              updatedCompletedRuns.sort((a, b) => new Date(b.date) - new Date(a.date));
+              
+              // Update upcoming runs (remove completed ones)
+              console.log('Updating upcoming runs...');
+              const completedDates = new Set(
+                runs.map(run => new Date(run.start_date).toDateString())
+              );
+              
+              const updatedUpcomingRuns = upcomingRuns.filter(run => {
+                const runDate = new Date(run.date).toDateString();
+                return !completedDates.has(runDate);
+              });
+              
+              // Calculate updated stats
+              console.log('Calculating updated stats...');
+              const totalDistance = updatedCompletedRuns.reduce((sum, run) => sum + run.distance, 0);
+              const totalTimeInSeconds = updatedCompletedRuns.reduce((sum, run) => {
+                const parts = run.duration.split(':').map(Number);
+                if (parts.length === 3) {
+                  return sum + parts[0] * 3600 + parts[1] * 60 + parts[2];
+                }
+                return sum + parts[0] * 60 + parts[1];
+              }, 0);
+              
+              const updatedStats = {
+                ...stats,
+                totalDistance: totalDistance.toFixed(2),
+                totalRuns: updatedCompletedRuns.length,
+                totalTime: formatDuration(totalTimeInSeconds),
+                averagePace: calculatePace(totalTimeInSeconds, totalDistance)
+              };
+              
+              // Write updated files
+              console.log('Writing updated JSON files...');
+              fs.writeFileSync(completedRunsPath, JSON.stringify(updatedCompletedRuns, null, 2));
+              fs.writeFileSync(upcomingRunsPath, JSON.stringify(updatedUpcomingRuns, null, 2));
+              fs.writeFileSync(statsPath, JSON.stringify(updatedStats, null, 2));
+              
+              console.log('Strava data sync completed successfully!');
+            } catch (error) {
+              console.error('Error syncing Strava data:', error.message);
+              process.exit(1);
+            }
+          }
+          
+          function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const remainingSeconds = seconds % 60;
+            
+            if (hours > 0) {
+              return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+          }
+          
+          function calculatePace(seconds, kilometers) {
+            if (kilometers === 0) return '0:00';
+            
+            const totalMinutes = seconds / 60;
+            const minutesPerKm = totalMinutes / kilometers;
+            
+            const minutes = Math.floor(minutesPerKm);
+            const secondsDecimal = (minutesPerKm - minutes) * 60;
+            const secondsRounded = Math.round(secondsDecimal);
+            
+            return `${minutes}:${secondsRounded.toString().padStart(2, '0')}`;
+          }
+          
+          main();
+          EOF
+          
+          node fetch-strava.js
+        env:
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          
+      - name: Build website
+        run: npm run build
+        
+      - name: Commit changes
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add src/data/*.json
+          git commit -m "Update Strava data" || echo "No changes to commit"
+          git push
+``` 
