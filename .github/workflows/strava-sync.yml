@@ -48,17 +48,29 @@ jobs:
               const accessToken = tokenResponse.data.access_token;
               console.log('Access token obtained.');
               
-              // Get activities (since April 7, 2025)
+              // Get activities without date filter
               console.log('Fetching activities...');
-              const since = Math.floor(new Date('2025-04-07').getTime() / 1000);
               const activitiesResponse = await axios.get(
-                `https://www.strava.com/api/v3/athlete/activities?after=${since}&per_page=100`,
-                { headers: { 'Authorization': `Bearer ${accessToken}` } }
-              );
+                'https://www.strava.com/api/v3/athlete/activities?per_page=100',
+                { 
+                  headers: { 'Authorization': `Bearer ${accessToken}` }
+                }
+              ).catch(error => {
+                console.error('Error details:', error.response ? error.response.data : 'No response data');
+                console.error('Status:', error.response ? error.response.status : 'Unknown status');
+                throw error;
+              });
+              
+              console.log('Activities fetched successfully');
               
               // Filter for runs only
               const runs = activitiesResponse.data.filter(activity => activity.type === 'Run');
               console.log(`Found ${runs.length} runs.`);
+              
+              // Apply date filter in memory (for runs after April 7, 2025)
+              const targetDate = new Date('2025-04-07').getTime();
+              const filteredRuns = runs.filter(run => new Date(run.start_date).getTime() >= targetDate);
+              console.log(`After filtering for dates >= April 7, 2025: ${filteredRuns.length} runs remain.`);
               
               // Read existing files
               console.log('Reading existing JSON files...');
@@ -71,7 +83,7 @@ jobs:
               let stats = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
               
               // Format completed runs data
-              const newCompletedRuns = runs.map((run) => {
+              const newCompletedRuns = filteredRuns.map((run) => {
                 const startDate = new Date(run.start_date);
                 
                 // Find if this run matches an upcoming run
@@ -152,11 +164,11 @@ jobs:
               
               // Only add runs that don't already exist in completedRuns
               console.log('Checking for new runs...');
-              const stravaActivityIds = new Set(runs.map(run => run.id.toString()));
+              const stravaActivityIds = new Set(filteredRuns.map(run => run.id.toString()));
               const existingIds = new Set(completedRuns.map(run => run.stravaId?.toString()));
               
               const trulyNewRuns = newCompletedRuns.filter(run => {
-                const stravaId = runs.find(r => 
+                const stravaId = filteredRuns.find(r => 
                   new Date(r.start_date).toDateString() === new Date(run.date).toDateString()
                 )?.id;
                 return stravaId && !existingIds.has(stravaId.toString());
@@ -166,7 +178,7 @@ jobs:
               
               // Add Strava IDs to the new runs
               trulyNewRuns.forEach(run => {
-                const matchingRun = runs.find(r => 
+                const matchingRun = filteredRuns.find(r => 
                   new Date(r.start_date).toDateString() === new Date(run.date).toDateString()
                 );
                 if (matchingRun) {
@@ -183,7 +195,7 @@ jobs:
               // Update upcoming runs (remove completed ones)
               console.log('Updating upcoming runs...');
               const completedDates = new Set(
-                runs.map(run => new Date(run.start_date).toDateString())
+                filteredRuns.map(run => new Date(run.start_date).toDateString())
               );
               
               const updatedUpcomingRuns = upcomingRuns.filter(run => {
