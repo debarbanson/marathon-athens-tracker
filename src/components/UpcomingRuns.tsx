@@ -306,10 +306,7 @@ const UpcomingRuns: React.FC<RunsProps> = ({
                             <span className="text-gray-500 dark:text-gray-400">Distance:</span> <span className="dark:text-white">{run.distance}km</span>
                           </div>
                           <div className="text-sm">
-                            <span className="text-gray-500 dark:text-gray-400">Time:</span> <span className="dark:text-white">{run.predictedTime}</span>
-                          </div>
-                          <div className="text-sm">
-                            <span className="text-gray-500 dark:text-gray-400">Goal:</span> <span className="dark:text-white">{run.tag}</span>
+                            <span className="text-gray-500 dark:text-gray-400">Predicted Time:</span> <span className="dark:text-white">{run.predictedTime}</span>
                           </div>
                         </div>
                       </div>
