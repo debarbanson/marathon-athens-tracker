@@ -1,34 +1,28 @@
 'use client'
 
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 // Interface for upcoming runs data
 interface UpcomingRun {
-  id: number
-  date: string
+  id: string
   displayDate: string
   type: string
   distance: number
+  predictedTime: string
   tag: string
-  predictedTime?: string
 }
 
 // Interface for completed runs data
 interface CompletedRun {
-  id: number
+  id: string
   date: string
-  displayDate: string
   type: string
   distance: number
-  plannedDistance: number
-  tag: string
   duration: string
   pace: string
-  predictedTime: string
-  predictedPace: string
-  overachievedDistance: boolean
-  overachievedPace: boolean
+  didOverachieveDistance: boolean
+  didOverachievePace: boolean
 }
 
 interface RunsProps {
@@ -37,52 +31,169 @@ interface RunsProps {
   maxRuns?: number
 }
 
-// Get run type color
+// Helper function to fix month names
+const fixMonthName = (dateStr: string): string => {
+  const corrections: Record<string, string> = {
+    'Aprilil': 'April',
+    'Marchch': 'March',
+    'Januaryry': 'January',
+    'Januray': 'January',
+    'Februaryry': 'February',
+    'Febuary': 'February',
+    'Maych': 'May',
+    'Junene': 'June',
+    'Julyly': 'July',
+    'Augustst': 'August',
+    'Septemberber': 'September',
+    'Septmeber': 'September',
+    'Octoberber': 'October',
+    'Ocotber': 'October',
+    'Novemberber': 'November',
+    'Novermber': 'November',
+    'Decemberber': 'December',
+    'Decemeber': 'December'
+  };
+
+  let fixedString = dateStr;
+  Object.entries(corrections).forEach(([incorrect, correct]) => {
+    const regex = new RegExp(incorrect, 'gi');
+    fixedString = fixedString.replace(regex, correct);
+  });
+  
+  return fixedString;
+}
+
+// Helper function to normalize date formats for comparison
+const normalizeDate = (dateStr: string): Date => {
+  // Already in ISO format (YYYY-MM-DD)
+  if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+    const date = new Date(dateStr)
+    // Set time to midnight for proper comparison
+    date.setHours(0, 0, 0, 0)
+    return date
+  }
+
+  // Format like "Monday, April 1st"
+  if (dateStr.includes(',')) {
+    const fixedDateStr = fixMonthName(dateStr)
+    const parts = fixedDateStr.split(', ')[1].split(' ')
+    const month = parts[0]
+    let day = parts[1].replace(/st|nd|rd|th/, '')
+    
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+    const monthIndex = months.findIndex(m => m === month)
+    
+    if (monthIndex !== -1) {
+      const currentYear = new Date().getFullYear()
+      const date = new Date(currentYear, monthIndex, parseInt(day))
+      date.setHours(0, 0, 0, 0)
+      return date
+    }
+  }
+  
+  // Default to current date if parsing fails
+  const date = new Date()
+  date.setHours(0, 0, 0, 0)
+  return date
+}
+
+// Format date for display with day of week and month+day
+const formatDisplayDate = (dateString: string) => {
+  // First fix any month name issues
+  const fixedDateString = fixMonthName(dateString);
+  
+  // Parse the date string
+  const date = new Date(fixedDateString);
+  
+  return {
+    dayOfWeek: date.toLocaleDateString('en-US', { weekday: 'long' }),
+    monthAndDay: date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+  };
+};
+
+// Get color based on run type
+const getRunColor = (type: string): string => {
+  const typeColors: Record<string, string> = {
+    'Long Run': '#4338ca', // indigo
+    'Easy': '#0891b2', // cyan
+    'Recovery': '#84cc16', // lime
+    'Tempo': '#ea580c', // orange
+    'Speed': '#dc2626', // red
+    'Race': '#7c3aed', // violet
+  };
+  
+  return typeColors[type] || '#6b7280'; // default gray if type not found
+};
+
+// Helper function to determine color based on run type
 const getRunTypeColor = (type: string) => {
-  const colors = {
-    short: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    medium: 'bg-blue-200 text-blue-900 dark:bg-blue-800 dark:text-blue-100',
-    long: 'bg-blue-300 text-blue-950 dark:bg-blue-700 dark:text-blue-50',
-    interval: 'bg-blue-400 text-blue-950 dark:bg-blue-600 dark:text-white',
-    recovery: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
-    default: 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200'
-  }
+  const typeLower = type.toLowerCase()
   
-  return colors[type.toLowerCase() as keyof typeof colors] || colors.default
+  if (typeLower.includes('easy') || typeLower.includes('recovery')) {
+    return 'bg-green-100 text-green-800'
+  } else if (typeLower.includes('tempo') || typeLower.includes('threshold')) {
+    return 'bg-orange-100 text-orange-800'
+  } else if (typeLower.includes('interval') || typeLower.includes('speed')) {
+    return 'bg-red-100 text-red-800'
+  } else if (typeLower.includes('long')) {
+    return 'bg-blue-100 text-blue-800'
+  } else {
+    return 'bg-purple-100 text-purple-800'
+  }
 }
 
-// Format date from ISO string to display format with full month name
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    month: 'long', 
-    day: 'numeric' 
-  })
-}
-
-// Format time string to display HH:MM:SS for times over 60 minutes
-const formatTime = (timeString: string) => {
-  if (!timeString) return '';
+const CompletedRunRow = ({ run }: { run: CompletedRun }) => {
+  const { dayOfWeek, monthAndDay } = formatDisplayDate(run.date);
+  const color = getRunColor(run.type);
   
-  const parts = timeString.split(':').map(Number);
-  
-  // Check if it's already in HH:MM:SS format
-  if (parts.length === 3) {
-    return timeString;
-  }
-  
-  // Check if minutes exceed 60
-  if (parts.length === 2 && parts[0] >= 60) {
-    const hours = Math.floor(parts[0] / 60);
-    const minutes = parts[0] % 60;
-    const seconds = parts[1];
-    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  }
-  
-  // Return original format if not over 60 minutes
-  return timeString;
-}
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="rounded-xl p-4 mb-4 bg-white shadow-md dark:bg-gray-800 border-l-4"
+      style={{ borderLeftColor: color }}
+    >
+      <div className="grid grid-cols-[1fr_2fr] gap-4">
+        {/* Date Column */}
+        <div className="flex flex-col">
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {dayOfWeek}
+          </span>
+          <span className="font-semibold">
+            {monthAndDay}
+          </span>
+        </div>
+        
+        {/* Run Details Column */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-500 dark:text-gray-400">Type</span>
+            <span className="font-medium">{run.type}</span>
+          </div>
+          
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-500 dark:text-gray-400">Distance</span>
+            <span className="font-medium">{run.distance} km</span>
+          </div>
+          
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-500 dark:text-gray-400">Time</span>
+            <span className="font-medium">{run.duration}</span>
+          </div>
+          
+          <div className="flex flex-col col-span-3">
+            <span className="text-xs text-gray-500 dark:text-gray-400">Pace</span>
+            <span className="font-medium">{run.pace}/km</span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const UpcomingRuns: React.FC<RunsProps> = ({ 
   upcomingRunsData, 
@@ -91,65 +202,17 @@ const UpcomingRuns: React.FC<RunsProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'upcoming' | 'completed'>('upcoming')
   
-  // Filter upcoming runs to only show future dates
+  // Filter out completed runs from upcoming runs based on date
   const today = new Date()
-  today.setHours(0, 0, 0, 0) // Set to start of day for proper comparison
-  
-  // Parse dates correctly regardless of format (DD-MM-YYYY or ISO)
-  const parseDate = (dateString: string): Date => {
-    if (dateString.includes('-') && dateString.split('-').length === 3) {
-      const parts = dateString.split('-')
-      // Check if first part is a 4-digit year (YYYY-MM-DD) or day (DD-MM-YYYY)
-      if (parts[0].length === 4) {
-        return new Date(dateString) // Already in YYYY-MM-DD format
-      } else {
-        // Convert from DD-MM-YYYY to YYYY-MM-DD
-        return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`)
-      }
-    }
-    return new Date(dateString)
-  }
-  
-  // Filter upcoming runs to only include future dates
-  const upcomingRuns = upcomingRunsData.filter(run => {
-    const runDate = parseDate(run.date)
+  today.setHours(0, 0, 0, 0)
+
+  const filteredUpcomingRuns = upcomingRunsData.filter(run => {
+    // Normalize dates for comparison
+    const runDate = normalizeDate(run.displayDate)
+    
+    // Check if this run is in the future
     return runDate >= today
   })
-  
-  // Show all completed runs
-  const completedRuns = completedRunsData
-  
-  // Fix common month format issues
-  const fixMonthFormat = (displayDate: string): string => {
-    return displayDate
-      .replace('Aprilil', 'April')
-      .replace('Apr', 'April')
-  }
-  
-  // Helper to format time difference
-  const getTimeDiff = (actual: string, predicted: string) => {
-    if (!predicted) return null
-    
-    const actualParts = actual.split(':').map(Number)
-    const predictedParts = predicted.split(':').map(Number)
-    
-    // Convert to seconds for comparison
-    const actualSeconds = actualParts[0] * 60 * 60 + actualParts[1] * 60 + (actualParts[2] || 0)
-    const predictedSeconds = predictedParts[0] * 60 * 60 + predictedParts[1] * 60 + (predictedParts[2] || 0)
-    
-    // Calculate difference in seconds
-    const diffSeconds = actualSeconds - predictedSeconds
-    
-    // Format the difference
-    if (Math.abs(diffSeconds) < 60) {
-      return `${Math.abs(diffSeconds)}s ${diffSeconds >= 0 ? 'slower' : 'faster'}`
-    }
-    
-    const diffMinutes = Math.floor(Math.abs(diffSeconds) / 60)
-    const remainingSeconds = Math.abs(diffSeconds) % 60
-    
-    return `${diffMinutes}:${String(remainingSeconds).padStart(2, '0')} ${diffSeconds >= 0 ? 'slower' : 'faster'}`
-  }
 
   return (
     <div>
@@ -180,123 +243,79 @@ const UpcomingRuns: React.FC<RunsProps> = ({
       {/* Tab content - scrollable container */}
       <div className="max-h-[400px] overflow-y-auto pr-2">
         {activeTab === 'upcoming' ? (
-          <ul className="space-y-4">
-            {upcomingRuns.length > 0 ? (
-              upcomingRuns.map((run, index) => (
-                <motion.li 
-                  key={run.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.5) }}
-                  className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 border-l-4 border-blue-500 dark:border-blue-600 shadow-sm"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-semibold text-base md:text-lg text-slate-800 dark:text-slate-200">
-                        {fixMonthFormat(run.displayDate)}
-                      </p>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base font-medium">{run.type}</p>
-                      {run.predictedTime && (
-                        <p className="text-sm mt-1.5 text-blue-600 dark:text-blue-400">
-                          Est. time: {formatTime(run.predictedTime)}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <span className="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">{run.distance} km</span>
-                      <span className={`text-xs md:text-sm px-3 py-1 mt-1.5 rounded-full font-medium ${getRunTypeColor(run.tag)}`}>
-                        {run.tag}
-                      </span>
-                    </div>
-                  </div>
-                </motion.li>
-              ))
-            ) : (
-              <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-                No upcoming runs scheduled
-              </div>
-            )}
-          </ul>
-        ) : (
-          <ul className="space-y-4">
-            {completedRuns.length > 0 ? (
-              completedRuns.map((run, index) => (
-                <motion.li 
-                  key={run.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.5) }}
-                  className={`bg-slate-50 dark:bg-slate-900 rounded-lg py-3 px-4 border-l-4 border-blue-${
-                    run.overachievedPace ? '600' : '500'
-                  } dark:border-blue-${
-                    run.overachievedPace ? '500' : '600'
-                  } shadow-sm`}
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <p className="font-semibold text-base md:text-lg text-slate-800 dark:text-slate-200">
-                        {fixMonthFormat(run.displayDate)}
-                      </p>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base font-medium mb-1">
-                        {run.type} 
-                        <span className="text-slate-500 dark:text-slate-400 text-xs md:text-sm ml-1.5">
-                          ({run.plannedDistance} km planned)
-                        </span>
-                      </p>
-                      <div className="space-y-1 md:space-y-2">
-                        {/* Pace row */}
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-center">
-                          <span className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-base whitespace-nowrap md:w-1/3 md:self-center">
-                            Pace: {run.pace} min/km
-                          </span>
-                          <div className="mt-0.5 md:mt-0 md:ml-4 md:flex-1 md:flex md:justify-center">
-                            {run.overachievedPace ? (
-                              <span className="text-blue-600 dark:text-blue-400 flex items-center text-sm md:text-base">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 mr-0.5">
-                                  <path fillRule="evenodd" d="M12.577 4.878a.75.75 0 01.919-.53l4.78 1.281a.75.75 0 01.531.919l-1.281 4.78a.75.75 0 01-1.449-.387l.81-3.022a19.407 19.407 0 00-5.594 5.203.75.75 0 01-1.139.093L7 10.06l-4.72 4.72a.75.75 0 01-1.06-1.061l5.25-5.25a.75.75 0 011.06 0l3.074 3.073a20.923 20.923 0 015.545-4.931l-3.042-.815a.75.75 0 01-.53-.919z" clipRule="evenodd" />
-                                </svg>
-                                Faster than predicted
-                              </span>
-                            ) : (
-                              <span className="text-orange-600 dark:text-orange-400 flex items-center text-sm md:text-base">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 mr-0.5">
-                                  <path fillRule="evenodd" d="M10 2a.75.75 0 01.75.75v7.797l2.22-2.22a.75.75 0 111.06 1.06l-3.5 3.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 111.06-1.06l2.22 2.22V2.75A.75.75 0 0110 2z" clipRule="evenodd" />
-                                </svg>
-                                Slower than predicted
-                              </span>
-                            )}
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="upcoming-runs"
+            >
+              <div className="space-y-4">
+                {filteredUpcomingRuns.length > 0 ? (
+                  filteredUpcomingRuns.map((run) => {
+                    const dateComponents = run.displayDate.split(', ')
+                    const dayOfWeek = dateComponents[0]
+                    let monthAndDay = fixMonthName(dateComponents[1])
+                    
+                    // Get run color based on type
+                    const runColor = getRunTypeColor(run.type)
+                    
+                    return (
+                      <div key={run.id} className="run-card animate-fade-in p-4 bg-white rounded-lg shadow-md">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <div className="text-gray-500 text-sm">{dayOfWeek}</div>
+                            <div className="font-semibold">{monthAndDay}</div>
+                          </div>
+                          <div className={`run-type text-sm font-semibold px-2 py-1 rounded ${runColor}`}>
+                            {run.type}
                           </div>
                         </div>
-                        
-                        {/* Time row */}
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-center">
-                          <span className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-base whitespace-nowrap md:w-1/3 md:self-center">
-                            Time: {formatTime(run.duration)}
-                          </span>
-                          <span className="text-slate-400 dark:text-slate-500 text-sm md:text-base mt-0.5 md:mt-0 md:ml-4 md:flex-1 md:text-center">
-                            vs. predicted: {formatTime(run.predictedTime)}
-                          </span>
+                        <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                          <div className="text-sm">
+                            <span className="text-gray-500">Distance:</span> {run.distance}km
+                          </div>
+                          <div className="text-sm">
+                            <span className="text-gray-500">Time:</span> {run.predictedTime}
+                          </div>
+                          <div className="text-sm col-span-2">
+                            <span className="text-gray-500">Goal:</span> {run.tag}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex flex-col items-end ml-2">
-                      <div className="flex items-baseline">
-                        <span className="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">{run.distance}</span>
-                        <span className="ml-1 text-sm font-medium text-blue-600 dark:text-blue-400">km</span>
-                      </div>
-                      <span className={`text-xs md:text-sm px-3 py-1 mt-1.5 rounded-full font-medium ${getRunTypeColor(run.tag)}`}>
-                        {run.tag}
-                      </span>
-                    </div>
+                    )
+                  })
+                ) : (
+                  <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                    No upcoming runs scheduled
                   </div>
-                </motion.li>
-              ))
-            ) : (
-              <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-                No completed runs yet
+                )}
               </div>
-            )}
-          </ul>
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="completed-runs"
+            >
+              <div className="space-y-4">
+                {completedRunsData.length > 0 ? (
+                  completedRunsData.map((run) => (
+                    <CompletedRunRow key={run.id} run={run} />
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                    No completed runs yet
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
         )}
       </div>
     </div>
