@@ -4,7 +4,7 @@
     "date": "18-04-2025",
     "displayDate": "Friday, Apr 18",
     "type": "Short Run",
-    "distance": 5.0,
+    "distance": 5,
     "tag": "short",
     "predictedTime": "27:47"
   },
@@ -13,7 +13,7 @@
     "date": "20-04-2025",
     "displayDate": "Sunday, Apr 20",
     "type": "Medium Run",
-    "distance": 7.0,
+    "distance": 7,
     "tag": "medium",
     "predictedTime": "39:22"
   },
@@ -22,7 +22,7 @@
     "date": "23-04-2025",
     "displayDate": "Wednesday, Apr 23",
     "type": "Short Run",
-    "distance": 5.0,
+    "distance": 5,
     "tag": "short",
     "predictedTime": "27:40"
   },
@@ -31,7 +31,7 @@
     "date": "25-04-2025",
     "displayDate": "Friday, Apr 25",
     "type": "Medium Run",
-    "distance": 6.0,
+    "distance": 6,
     "tag": "medium",
     "predictedTime": "33:12"
   },
@@ -40,7 +40,7 @@
     "date": "27-04-2025",
     "displayDate": "Sunday, Apr 27",
     "type": "Medium Run",
-    "distance": 9.0,
+    "distance": 9,
     "tag": "medium",
     "predictedTime": "51:36"
   },
@@ -49,7 +49,7 @@
     "date": "30-04-2025",
     "displayDate": "Wednesday, Apr 30",
     "type": "Short Run",
-    "distance": 4.0,
+    "distance": 4,
     "tag": "short",
     "predictedTime": "22:02"
   },
@@ -58,7 +58,7 @@
     "date": "02-05-2025",
     "displayDate": "Friday, May 02",
     "type": "Short Run",
-    "distance": 5.0,
+    "distance": 5,
     "tag": "short",
     "predictedTime": "27:32"
   },
@@ -67,7 +67,7 @@
     "date": "04-05-2025",
     "displayDate": "Sunday, May 04",
     "type": "Medium Run",
-    "distance": 8.0,
+    "distance": 8,
     "tag": "medium",
     "predictedTime": "45:08"
   },
@@ -76,7 +76,7 @@
     "date": "07-05-2025",
     "displayDate": "Wednesday, May 07",
     "type": "Medium Run",
-    "distance": 6.0,
+    "distance": 6,
     "tag": "medium",
     "predictedTime": "32:54"
   },
@@ -85,7 +85,7 @@
     "date": "09-05-2025",
     "displayDate": "Friday, May 09",
     "type": "Medium Run",
-    "distance": 7.0,
+    "distance": 7,
     "tag": "medium",
     "predictedTime": "38:51"
   },
@@ -94,7 +94,7 @@
     "date": "11-05-2025",
     "displayDate": "Sunday, May 11",
     "type": "Long Run",
-    "distance": 11.0,
+    "distance": 11,
     "tag": "long",
     "predictedTime": "63:59"
   },
@@ -103,7 +103,7 @@
     "date": "14-05-2025",
     "displayDate": "Wednesday, May 14",
     "type": "Medium Run",
-    "distance": 7.0,
+    "distance": 7,
     "tag": "medium",
     "predictedTime": "38:40"
   },
@@ -112,7 +112,7 @@
     "date": "16-05-2025",
     "displayDate": "Friday, May 16",
     "type": "Medium Run",
-    "distance": 8.0,
+    "distance": 8,
     "tag": "medium",
     "predictedTime": "44:44"
   },
@@ -121,7 +121,7 @@
     "date": "18-05-2025",
     "displayDate": "Sunday, May 18",
     "type": "Long Run",
-    "distance": 13.0,
+    "distance": 13,
     "tag": "long",
     "predictedTime": "77:01"
   },
@@ -130,7 +130,7 @@
     "date": "21-05-2025",
     "displayDate": "Wednesday, May 21",
     "type": "Medium Run",
-    "distance": 8.0,
+    "distance": 8,
     "tag": "medium",
     "predictedTime": "44:32"
   },
@@ -139,7 +139,7 @@
     "date": "23-05-2025",
     "displayDate": "Friday, May 23",
     "type": "Medium Run",
-    "distance": 9.0,
+    "distance": 9,
     "tag": "medium",
     "predictedTime": "50:42"
   },
@@ -148,7 +148,7 @@
     "date": "25-05-2025",
     "displayDate": "Sunday, May 25",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "90:30"
   },
@@ -157,7 +157,7 @@
     "date": "28-05-2025",
     "displayDate": "Wednesday, May 28",
     "type": "Medium Run",
-    "distance": 6.0,
+    "distance": 6,
     "tag": "medium",
     "predictedTime": "32:27"
   },
@@ -166,7 +166,7 @@
     "date": "30-05-2025",
     "displayDate": "Friday, May 30",
     "type": "Medium Run",
-    "distance": 7.0,
+    "distance": 7,
     "tag": "medium",
     "predictedTime": "38:19"
   },
@@ -175,7 +175,7 @@
     "date": "01-06-2025",
     "displayDate": "Sunday, Jun 01",
     "type": "Long Run",
-    "distance": 12.0,
+    "distance": 12,
     "tag": "long",
     "predictedTime": "69:42"
   },
@@ -184,7 +184,7 @@
     "date": "04-06-2025",
     "displayDate": "Wednesday, Jun 04",
     "type": "Medium Run",
-    "distance": 9.0,
+    "distance": 9,
     "tag": "medium",
     "predictedTime": "50:15"
   },
@@ -193,7 +193,7 @@
     "date": "06-06-2025",
     "displayDate": "Friday, Jun 06",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "56:30"
   },
@@ -202,7 +202,7 @@
     "date": "08-06-2025",
     "displayDate": "Sunday, Jun 08",
     "type": "Long Run",
-    "distance": 17.0,
+    "distance": 17,
     "tag": "long",
     "predictedTime": "103:59"
   },
@@ -211,7 +211,7 @@
     "date": "11-06-2025",
     "displayDate": "Wednesday, Jun 11",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "56:15"
   },
@@ -220,7 +220,7 @@
     "date": "13-06-2025",
     "displayDate": "Friday, Jun 13",
     "type": "Long Run",
-    "distance": 11.0,
+    "distance": 11,
     "tag": "long",
     "predictedTime": "62:36"
   },
@@ -229,7 +229,7 @@
     "date": "15-06-2025",
     "displayDate": "Sunday, Jun 15",
     "type": "Long Run",
-    "distance": 19.0,
+    "distance": 19,
     "tag": "long",
     "predictedTime": "118:16"
   },
@@ -238,7 +238,7 @@
     "date": "18-06-2025",
     "displayDate": "Wednesday, Jun 18",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "56:00"
   },
@@ -247,7 +247,7 @@
     "date": "20-06-2025",
     "displayDate": "Friday, Jun 20",
     "type": "Long Run",
-    "distance": 12.0,
+    "distance": 12,
     "tag": "long",
     "predictedTime": "68:48"
   },
@@ -256,7 +256,7 @@
     "date": "22-06-2025",
     "displayDate": "Sunday, Jun 22",
     "type": "Long Run",
-    "distance": 21.0,
+    "distance": 21,
     "tag": "long",
     "predictedTime": "133:00"
   },
@@ -265,7 +265,7 @@
     "date": "25-06-2025",
     "displayDate": "Wednesday, Jun 25",
     "type": "Medium Run",
-    "distance": 7.0,
+    "distance": 7,
     "tag": "medium",
     "predictedTime": "37:37"
   },
@@ -274,7 +274,7 @@
     "date": "27-06-2025",
     "displayDate": "Friday, Jun 27",
     "type": "Medium Run",
-    "distance": 9.0,
+    "distance": 9,
     "tag": "medium",
     "predictedTime": "49:34"
   },
@@ -283,7 +283,7 @@
     "date": "29-06-2025",
     "displayDate": "Sunday, Jun 29",
     "type": "Long Run",
-    "distance": 16.0,
+    "distance": 16,
     "tag": "long",
     "predictedTime": "95:36"
   },
@@ -292,25 +292,16 @@
     "date": "02-07-2025",
     "displayDate": "Wednesday, Jul 02",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "55:30"
-  },
-  {
-    "id": 34,
-    "date": "04-07-2025",
-    "displayDate": "Friday, Jul 04",
-    "type": "Long Run",
-    "distance": 13.0,
-    "tag": "long",
-    "predictedTime": "74:45"
   },
   {
     "id": 35,
     "date": "06-07-2025",
     "displayDate": "Sunday, Jul 06",
     "type": "Long Run",
-    "distance": 23.0,
+    "distance": 23,
     "tag": "long",
     "predictedTime": "147:35"
   },
@@ -319,7 +310,7 @@
     "date": "09-07-2025",
     "displayDate": "Wednesday, Jul 09",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "55:15"
   },
@@ -328,7 +319,7 @@
     "date": "11-07-2025",
     "displayDate": "Friday, Jul 11",
     "type": "Long Run",
-    "distance": 14.0,
+    "distance": 14,
     "tag": "long",
     "predictedTime": "81:05"
   },
@@ -337,7 +328,7 @@
     "date": "13-07-2025",
     "displayDate": "Sunday, Jul 13",
     "type": "Long Run",
-    "distance": 25.0,
+    "distance": 25,
     "tag": "long",
     "predictedTime": "163:07"
   },
@@ -346,7 +337,7 @@
     "date": "16-07-2025",
     "displayDate": "Wednesday, Jul 16",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "55:00"
   },
@@ -355,7 +346,7 @@
     "date": "18-07-2025",
     "displayDate": "Friday, Jul 18",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "87:30"
   },
@@ -364,7 +355,7 @@
     "date": "20-07-2025",
     "displayDate": "Sunday, Jul 20",
     "type": "Long Run",
-    "distance": 27.0,
+    "distance": 27,
     "tag": "long",
     "predictedTime": "179:06"
   },
@@ -373,7 +364,7 @@
     "date": "23-07-2025",
     "displayDate": "Wednesday, Jul 23",
     "type": "Medium Run",
-    "distance": 7.0,
+    "distance": 7,
     "tag": "medium",
     "predictedTime": "36:55"
   },
@@ -382,7 +373,7 @@
     "date": "25-07-2025",
     "displayDate": "Friday, Jul 25",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "54:45"
   },
@@ -391,7 +382,7 @@
     "date": "27-07-2025",
     "displayDate": "Sunday, Jul 27",
     "type": "Long Run",
-    "distance": 20.0,
+    "distance": 20,
     "tag": "long",
     "predictedTime": "122:50"
   },
@@ -400,7 +391,7 @@
     "date": "30-07-2025",
     "displayDate": "Wednesday, Jul 30",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "54:30"
   },
@@ -409,7 +400,7 @@
     "date": "01-08-2025",
     "displayDate": "Friday, Aug 01",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "86:45"
   },
@@ -418,7 +409,7 @@
     "date": "03-08-2025",
     "displayDate": "Sunday, Aug 03",
     "type": "Long Run",
-    "distance": 29.0,
+    "distance": 29,
     "tag": "long",
     "predictedTime": "194:47"
   },
@@ -427,7 +418,7 @@
     "date": "06-08-2025",
     "displayDate": "Wednesday, Aug 06",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "54:15"
   },
@@ -436,7 +427,7 @@
     "date": "08-08-2025",
     "displayDate": "Friday, Aug 08",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "86:22"
   },
@@ -445,7 +436,7 @@
     "date": "10-08-2025",
     "displayDate": "Sunday, Aug 10",
     "type": "Long Run",
-    "distance": 31.0,
+    "distance": 31,
     "tag": "long",
     "predictedTime": "211:34"
   },
@@ -454,7 +445,7 @@
     "date": "13-08-2025",
     "displayDate": "Wednesday, Aug 13",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "54:00"
   },
@@ -463,7 +454,7 @@
     "date": "15-08-2025",
     "displayDate": "Friday, Aug 15",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "86:00"
   },
@@ -472,7 +463,7 @@
     "date": "17-08-2025",
     "displayDate": "Sunday, Aug 17",
     "type": "Long Run",
-    "distance": 33.0,
+    "distance": 33,
     "tag": "long",
     "predictedTime": "228:48"
   },
@@ -481,7 +472,7 @@
     "date": "20-08-2025",
     "displayDate": "Wednesday, Aug 20",
     "type": "Medium Run",
-    "distance": 7.0,
+    "distance": 7,
     "tag": "medium",
     "predictedTime": "36:13"
   },
@@ -490,7 +481,7 @@
     "date": "22-08-2025",
     "displayDate": "Friday, Aug 22",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "53:45"
   },
@@ -499,7 +490,7 @@
     "date": "24-08-2025",
     "displayDate": "Sunday, Aug 24",
     "type": "Long Run",
-    "distance": 24.0,
+    "distance": 24,
     "tag": "long",
     "predictedTime": "151:24"
   },
@@ -508,7 +499,7 @@
     "date": "27-08-2025",
     "displayDate": "Wednesday, Aug 27",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "53:30"
   },
@@ -517,7 +508,7 @@
     "date": "29-08-2025",
     "displayDate": "Friday, Aug 29",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "85:15"
   },
@@ -526,7 +517,7 @@
     "date": "31-08-2025",
     "displayDate": "Sunday, Aug 31",
     "type": "Long Run",
-    "distance": 35.0,
+    "distance": 35,
     "tag": "long",
     "predictedTime": "245:35"
   },
@@ -535,7 +526,7 @@
     "date": "03-09-2025",
     "displayDate": "Wednesday, Sep 03",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "53:15"
   },
@@ -544,7 +535,7 @@
     "date": "05-09-2025",
     "displayDate": "Friday, Sep 05",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "84:52"
   },
@@ -553,7 +544,7 @@
     "date": "07-09-2025",
     "displayDate": "Sunday, Sep 07",
     "type": "Long Run",
-    "distance": 35.0,
+    "distance": 35,
     "tag": "long",
     "predictedTime": "244:42"
   },
@@ -562,7 +553,7 @@
     "date": "10-09-2025",
     "displayDate": "Wednesday, Sep 10",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "53:00"
   },
@@ -571,7 +562,7 @@
     "date": "12-09-2025",
     "displayDate": "Friday, Sep 12",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "84:30"
   },
@@ -580,7 +571,7 @@
     "date": "14-09-2025",
     "displayDate": "Sunday, Sep 14",
     "type": "Long Run",
-    "distance": 35.0,
+    "distance": 35,
     "tag": "long",
     "predictedTime": "243:50"
   },
@@ -589,7 +580,7 @@
     "date": "17-09-2025",
     "displayDate": "Wednesday, Sep 17",
     "type": "Medium Run",
-    "distance": 7.0,
+    "distance": 7,
     "tag": "medium",
     "predictedTime": "35:31"
   },
@@ -598,7 +589,7 @@
     "date": "19-09-2025",
     "displayDate": "Friday, Sep 19",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "52:45"
   },
@@ -607,7 +598,7 @@
     "date": "21-09-2025",
     "displayDate": "Sunday, Sep 21",
     "type": "Long Run",
-    "distance": 24.0,
+    "distance": 24,
     "tag": "long",
     "predictedTime": "149:00"
   },
@@ -616,7 +607,7 @@
     "date": "24-09-2025",
     "displayDate": "Wednesday, Sep 24",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "52:30"
   },
@@ -625,7 +616,7 @@
     "date": "26-09-2025",
     "displayDate": "Friday, Sep 26",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "83:45"
   },
@@ -634,7 +625,7 @@
     "date": "28-09-2025",
     "displayDate": "Sunday, Sep 28",
     "type": "Long Run",
-    "distance": 35.0,
+    "distance": 35,
     "tag": "long",
     "predictedTime": "242:05"
   },
@@ -643,7 +634,7 @@
     "date": "01-10-2025",
     "displayDate": "Wednesday, Oct 01",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "52:15"
   },
@@ -652,7 +643,7 @@
     "date": "03-10-2025",
     "displayDate": "Friday, Oct 03",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "83:22"
   },
@@ -661,7 +652,7 @@
     "date": "05-10-2025",
     "displayDate": "Sunday, Oct 05",
     "type": "Long Run",
-    "distance": 35.0,
+    "distance": 35,
     "tag": "long",
     "predictedTime": "241:12"
   },
@@ -670,7 +661,7 @@
     "date": "08-10-2025",
     "displayDate": "Wednesday, Oct 08",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "52:00"
   },
@@ -679,7 +670,7 @@
     "date": "10-10-2025",
     "displayDate": "Friday, Oct 10",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "83:00"
   },
@@ -688,7 +679,7 @@
     "date": "12-10-2025",
     "displayDate": "Sunday, Oct 12",
     "type": "Long Run",
-    "distance": 35.0,
+    "distance": 35,
     "tag": "long",
     "predictedTime": "240:20"
   },
@@ -697,7 +688,7 @@
     "date": "15-10-2025",
     "displayDate": "Wednesday, Oct 15",
     "type": "Medium Run",
-    "distance": 7.0,
+    "distance": 7,
     "tag": "medium",
     "predictedTime": "34:49"
   },
@@ -706,7 +697,7 @@
     "date": "17-10-2025",
     "displayDate": "Friday, Oct 17",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "51:45"
   },
@@ -715,7 +706,7 @@
     "date": "19-10-2025",
     "displayDate": "Sunday, Oct 19",
     "type": "Long Run",
-    "distance": 24.0,
+    "distance": 24,
     "tag": "long",
     "predictedTime": "146:36"
   },
@@ -724,7 +715,7 @@
     "date": "22-10-2025",
     "displayDate": "Wednesday, Oct 22",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "51:30"
   },
@@ -733,7 +724,7 @@
     "date": "24-10-2025",
     "displayDate": "Friday, Oct 24",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "82:15"
   },
@@ -742,7 +733,7 @@
     "date": "26-10-2025",
     "displayDate": "Sunday, Oct 26",
     "type": "Long Run",
-    "distance": 35.0,
+    "distance": 35,
     "tag": "long",
     "predictedTime": "238:35"
   },
@@ -751,7 +742,7 @@
     "date": "29-10-2025",
     "displayDate": "Wednesday, Oct 29",
     "type": "Medium Run",
-    "distance": 10.0,
+    "distance": 10,
     "tag": "medium",
     "predictedTime": "51:15"
   },
@@ -760,7 +751,7 @@
     "date": "31-10-2025",
     "displayDate": "Friday, Oct 31",
     "type": "Long Run",
-    "distance": 15.0,
+    "distance": 15,
     "tag": "long",
     "predictedTime": "81:52"
   },
@@ -769,7 +760,7 @@
     "date": "02-11-2025",
     "displayDate": "Sunday, Nov 02",
     "type": "Long Run",
-    "distance": 35.0,
+    "distance": 35,
     "tag": "long",
     "predictedTime": "237:42"
   }
