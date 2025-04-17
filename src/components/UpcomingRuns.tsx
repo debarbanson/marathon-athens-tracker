@@ -194,7 +194,7 @@ const CompletedRunRow = ({ run }: { run: CompletedRun }) => {
         </div>
         
         {/* Run Details Column */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <div className="flex flex-col">
             <span className="text-xs text-gray-500 dark:text-gray-400">Type</span>
             <span className="font-medium dark:text-white">{run.type}</span>
@@ -210,7 +210,7 @@ const CompletedRunRow = ({ run }: { run: CompletedRun }) => {
             <span className="font-medium dark:text-white">{run.duration}</span>
           </div>
           
-          <div className="flex flex-col col-span-3">
+          <div className="flex flex-col">
             <span className="text-xs text-gray-500 dark:text-gray-400">Pace</span>
             <span className="font-medium dark:text-white">{run.pace}/km</span>
           </div>
