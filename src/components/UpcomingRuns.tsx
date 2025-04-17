@@ -291,7 +291,11 @@ const UpcomingRuns: React.FC<RunsProps> = ({
                     const runColor = getRunTypeColor(run.type)
                     
                     return (
-                      <div key={run.id} className="run-card animate-fade-in p-4 bg-white dark:bg-slate-800 rounded-lg shadow-md dark:shadow-none dark:border dark:border-slate-700">
+                      <div 
+                        key={run.id} 
+                        className="run-card animate-fade-in p-4 bg-white dark:bg-slate-800 rounded-lg shadow-md dark:shadow-none dark:border dark:border-slate-700 border-l-4"
+                        style={{ borderLeftColor: getRunColor(run.type) }}
+                      >
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <div className="text-gray-500 dark:text-gray-400 text-sm">{dayOfWeek}</div>
