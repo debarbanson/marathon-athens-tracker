@@ -2,7 +2,7 @@ name: Strava Data Sync
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Run every 6 hours
+    - cron: '*/5 * * * *'  # Run every 3 minutes
   workflow_dispatch:  # Allows you to run this manually
 
 permissions:
