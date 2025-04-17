@@ -1,0 +1,6 @@
+This is a test file that should be visible at the correct path.
+Created: 2025-04-17
+Time: 20:45
+
+The Next.js basePath is set to '/marathon' so this file should be accessible at:
+https://www.debdc.nl/marathon/test-visible.txt 
