@@ -89,11 +89,44 @@ jobs:
               const newCompletedRuns = filteredRuns.map((run) => {
                 const startDate = new Date(run.start_date);
                 
-                // Find if this run matches an upcoming run
+                // Helper function to normalize date to YYYY-MM-DD format
+                const normalizeDate = (dateStr) => {
+                  let date;
+                  if (dateStr.includes('-')) {
+                    // Handle format like "18-04-2025"
+                    const parts = dateStr.split('-');
+                    if (parts.length === 3) {
+                      // Format is DD-MM-YYYY
+                      if (parts[2].length === 4) {
+                        date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                      } 
+                      // Format is MM-DD-YYYY
+                      else if (parts[0].length === 4) {
+                        date = new Date(dateStr);
+                      }
+                    }
+                  } else {
+                    // Try to parse as is
+                    date = new Date(dateStr);
+                  }
+                  
+                  // Format to YYYY-MM-DD for comparison
+                  return date.toISOString().split('T')[0];
+                };
+                
+                // Find if this run matches an upcoming run - improved matching
+                const stravaDateNormalized = normalizeDate(run.start_date);
+                console.log(`Strava run date normalized: ${stravaDateNormalized}`);
+                
                 const matchingUpcomingRun = upcomingRuns.find(upcoming => {
-                  const upcomingDate = new Date(upcoming.date);
-                  return upcomingDate.toDateString() === startDate.toDateString();
+                  const upcomingDateNormalized = normalizeDate(upcoming.date);
+                  console.log(`Comparing with upcoming date: ${upcoming.date} (normalized: ${upcomingDateNormalized})`);
+                  return upcomingDateNormalized === stravaDateNormalized;
                 });
+                
+                if (matchingUpcomingRun) {
+                  console.log(`Found matching upcoming run: ${matchingUpcomingRun.type} on ${matchingUpcomingRun.displayDate}`);
+                }
                 
                 // Calculate run type and planned distance
                 let runType = 'Short Run';
@@ -144,14 +177,17 @@ jobs:
                 
                 const overachievedPace = actualPaceSeconds < predictedPaceSeconds;
                 
+                // Fix the month name in display date
+                const properDisplayDate = startDate.toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  month: 'long', 
+                  day: 'numeric' 
+                });
+                
                 return {
                   id: completedRuns.length + 1, // Assign sequential ID
                   date: run.start_date,
-                  displayDate: startDate.toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  }),
+                  displayDate: properDisplayDate,
                   type: runType,
                   distance: parseFloat(actualDistance),
                   plannedDistance: parseFloat(plannedDistance),
@@ -172,7 +208,7 @@ jobs:
               
               const trulyNewRuns = newCompletedRuns.filter(run => {
                 const stravaId = filteredRuns.find(r => 
-                  new Date(r.start_date).toDateString() === new Date(run.date).toDateString()
+                  new Date(r.start_date).toISOString().split('T')[0] === new Date(run.date).toISOString().split('T')[0]
                 )?.id;
                 return stravaId && !existingIds.has(stravaId.toString());
               });
@@ -182,7 +218,7 @@ jobs:
               // Add Strava IDs to the new runs
               trulyNewRuns.forEach(run => {
                 const matchingRun = filteredRuns.find(r => 
-                  new Date(r.start_date).toDateString() === new Date(run.date).toDateString()
+                  new Date(r.start_date).toISOString().split('T')[0] === new Date(run.date).toISOString().split('T')[0]
                 );
                 if (matchingRun) {
                   run.stravaId = matchingRun.id;
@@ -195,15 +231,32 @@ jobs:
               // Sort by date (newest first)
               updatedCompletedRuns.sort((a, b) => new Date(b.date) - new Date(a.date));
               
-              // Update upcoming runs (remove completed ones)
+              // Update upcoming runs (remove completed ones) - improved date matching
               console.log('Updating upcoming runs...');
-              const completedDates = new Set(
-                filteredRuns.map(run => new Date(run.start_date).toDateString())
+              const completedDatesNormalized = new Set(
+                filteredRuns.map(run => new Date(run.start_date).toISOString().split('T')[0])
               );
               
               const updatedUpcomingRuns = upcomingRuns.filter(run => {
-                const runDate = new Date(run.date).toDateString();
-                return !completedDates.has(runDate);
+                // Handle different date formats in upcoming runs
+                let runDate;
+                if (run.date.includes('-')) {
+                  const parts = run.date.split('-');
+                  if (parts.length === 3) {
+                    if (parts[2].length === 4) {
+                      // Format is DD-MM-YYYY
+                      runDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                    } else {
+                      // Format is YYYY-MM-DD
+                      runDate = new Date(run.date);
+                    }
+                  }
+                } else {
+                  runDate = new Date(run.date);
+                }
+                
+                const normalizedDate = runDate.toISOString().split('T')[0];
+                return !completedDatesNormalized.has(normalizedDate);
               });
               
               // Calculate updated stats
