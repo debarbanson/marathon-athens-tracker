@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 // Interface for upcoming runs data
 interface UpcomingRun {
-  id: string
+  id: number
   displayDate: string
   type: string
   distance: number
@@ -15,14 +15,12 @@ interface UpcomingRun {
 
 // Interface for completed runs data
 interface CompletedRun {
-  id: string
+  id: number
   date: string
   type: string
   distance: number
   duration: string
   pace: string
-  didOverachieveDistance: boolean
-  didOverachievePace: boolean
 }
 
 interface RunsProps {
