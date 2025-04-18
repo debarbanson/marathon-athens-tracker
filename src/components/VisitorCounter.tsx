@@ -7,42 +7,41 @@ const VisitorCounter = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulated counter that uses localStorage
-    try {
-      // Small delay to simulate loading
-      setTimeout(() => {
-        // Try to get the current count from localStorage
-        let currentCount = parseInt(localStorage.getItem('marathonVisitorCount') || '0');
-        
-        // Get the last visit timestamp
-        const lastVisit = parseInt(localStorage.getItem('marathonLastVisit') || '0');
-        const now = Date.now();
-        
-        // Only increment if it's been more than 1 hour since last visit
-        // This prevents rapid counting on refreshes
-        if (now - lastVisit > 3600000) {
-          currentCount++;
-          localStorage.setItem('marathonVisitorCount', currentCount.toString());
+    const NAMESPACE = "marathon-athens-tracker";
+    const KEY = "visits";
+
+    // Try the CountAPI hit endpoint
+    fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data.value === 'number') {
+          setCount(data.value.toLocaleString());
+          setIsLoading(false);
+        } else {
+          throw new Error('Invalid data format from CountAPI');
         }
+      })
+      .catch(err => {
+        console.error('Error with primary counter:', err);
         
-        // Update last visit timestamp
-        localStorage.setItem('marathonLastVisit', now.toString());
-        
-        // Add a random number to make it more interesting (base + your view + random others)
-        // This gives the illusion of other visitors without actual tracking
-        const baseCount = 24; // Starting count - we assume the site has had some visitors
-        const simulatedCount = baseCount + currentCount + Math.floor(Math.random() * 5);
-        
-        setCount(simulatedCount.toLocaleString());
-        setIsLoading(false);
-      }, 800);
-    } catch (e) {
-      // Fallback for private browsing or localStorage issues
-      console.error('Error with visitor counter:', e);
-      // Just show a reasonable number
-      setCount((30 + Math.floor(Math.random() * 15)).toString());
-      setIsLoading(false);
-    }
+        // Fallback to just getting the current count
+        fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && typeof data.value === 'number') {
+              setCount(data.value.toLocaleString());
+              setIsLoading(false);
+            } else {
+              throw new Error('Invalid data format from CountAPI');
+            }
+          })
+          .catch(fallbackErr => {
+            console.error('Error with fallback counter:', fallbackErr);
+            // Final fallback - show a reasonable default
+            setCount('many');
+            setIsLoading(false);
+          });
+      });
   }, []);
 
   return (
