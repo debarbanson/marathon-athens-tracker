@@ -7,40 +7,32 @@ const VisitorCounter = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const NAMESPACE = "marathon-athens-tracker";
-    const KEY = "visits";
+    const UPSTASH_URL = 'https://noted-whale-14377.upstash.io';
+    const UPSTASH_TOKEN = 'ATgpAAIjcDFkZWFmZjQ0N2M2NDU0MDUwOWJmZTZlOTNiM2VmZDk4MnAxMA';
+    const COUNTER_KEY = 'athens_visits';
 
-    // Try the CountAPI hit endpoint
-    fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`)
-      .then(res => res.json())
+    // Call Upstash Redis REST API to increment the counter
+    fetch(`${UPSTASH_URL}/incr/${COUNTER_KEY}`, {
+      headers: { 
+        'Authorization': `Bearer ${UPSTASH_TOKEN}`
+      }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to update counter');
+        return res.json();
+      })
       .then(data => {
-        if (data && typeof data.value === 'number') {
-          setCount(data.value.toLocaleString());
+        if (data && typeof data.result === 'number') {
+          setCount(data.result.toLocaleString());
           setIsLoading(false);
         } else {
-          throw new Error('Invalid data format from CountAPI');
+          throw new Error('Invalid response format');
         }
       })
       .catch(err => {
-        console.error('Error with primary counter:', err);
-        
-        // Fallback to just getting the current count
-        fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data && typeof data.value === 'number') {
-              setCount(data.value.toLocaleString());
-              setIsLoading(false);
-            } else {
-              throw new Error('Invalid data format from CountAPI');
-            }
-          })
-          .catch(fallbackErr => {
-            console.error('Error with fallback counter:', fallbackErr);
-            // Final fallback - show a reasonable default
-            setCount('many');
-            setIsLoading(false);
-          });
+        console.error('Visitor counter error:', err);
+        setCount('many');
+        setIsLoading(false);
       });
   }, []);
 
