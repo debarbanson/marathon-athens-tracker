@@ -1,14 +1,5 @@
 [
   {
-    "id": 1,
-    "date": "18-04-2025",
-    "displayDate": "Friday, Apr 18",
-    "type": "Short Run",
-    "distance": 5,
-    "tag": "short",
-    "predictedTime": "27:47"
-  },
-  {
     "id": 2,
     "date": "20-04-2025",
     "displayDate": "Sunday, Apr 20",
