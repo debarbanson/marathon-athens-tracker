@@ -7,10 +7,16 @@ on:
     workflows: ["Strava Data Sync"]
     types:
       - completed
+    branches: [master]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # Only run deployment for direct commits or when Strava sync detected changes
+    if: >
+      github.event_name == 'push' || 
+      (github.event.workflow_run.conclusion == 'success' && 
+       github.event.workflow_run.name == 'Strava Data Sync')
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -40,4 +46,4 @@ jobs:
           timeout: 180000
           passive: true
           state-name: .my-ftp-state.json
-          dangerous-clean-slate: true 
+          # Remove dangerous-clean-slate to prevent site downtime during deploys 
