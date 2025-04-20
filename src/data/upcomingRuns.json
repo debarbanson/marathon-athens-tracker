@@ -1,14 +1,5 @@
 [
   {
-    "id": 2,
-    "date": "20-04-2025",
-    "displayDate": "Sunday, Apr 20",
-    "type": "Medium Run",
-    "distance": 7,
-    "tag": "medium",
-    "predictedTime": "39:22"
-  },
-  {
     "id": 3,
     "date": "23-04-2025",
     "displayDate": "Wednesday, Apr 23",
