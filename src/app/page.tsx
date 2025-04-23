@@ -72,7 +72,13 @@ export default function Home() {
         <div className={`${isMobile ? 'w-full' : 'w-2/3'} flex flex-col`}>
           {/* Motivational section above map */}
           <div className="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700 py-2 px-4">
-            <MotivationalSection compact={true} />
+            <div className="flex flex-col space-y-1">
+              <MotivationalSection compact={true} />
+              <p className="text-xs italic text-slate-500 dark:text-slate-400 mt-1.5 text-center">
+                The original Olympic marathon commemorated the run of the soldier Pheidippides from 
+                Marathon to Athens, bringing news of the victory over the Persians.
+              </p>
+            </div>
           </div>
           
           {/* Map section */}
