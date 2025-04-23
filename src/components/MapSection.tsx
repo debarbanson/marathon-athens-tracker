@@ -66,11 +66,6 @@ const MapSection: React.FC<MapSectionProps> = ({
         </div>
       </div>
       
-      {/* Map attribution */}
-      <div className="text-center w-full py-2 text-xs text-slate-600 dark:text-slate-400">
-        Map visualization of journey from Roelofarendsveen to Marathon
-      </div>
-      
       {/* Progress indicator at bottom - only show if showProgressBar is true */}
       {showProgressBar && (
         <div className="absolute left-6 right-6 bottom-10 z-10">
