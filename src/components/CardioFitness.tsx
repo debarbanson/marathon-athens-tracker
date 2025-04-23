@@ -227,39 +227,29 @@ const CardioFitness: React.FC<CardioFitnessProps> = ({ cardioData }) => {
         
         {/* Reference Range Legend */}
         <div className="mt-6 pt-3 border-t border-slate-100 dark:border-slate-700">
-          <div className="flex flex-wrap gap-2 justify-center">
+          <div className="flex flex-wrap gap-3 justify-center">
             {cardioData.referenceRanges.map((range, index) => {
-              let bgColor = "bg-gray-100";
-              let textColor = "text-gray-800";
-              
-              if (range.label === "Poor") {
-                bgColor = "bg-red-100 dark:bg-red-900/30";
-                textColor = "text-red-800 dark:text-red-200";
-              } else if (range.label === "Below Average") {
-                bgColor = "bg-orange-100 dark:bg-orange-900/30";
-                textColor = "text-orange-800 dark:text-orange-200";
-              } else if (range.label === "Average") {
-                bgColor = "bg-yellow-100 dark:bg-yellow-900/30";
-                textColor = "text-yellow-800 dark:text-yellow-200";
-              } else if (range.label === "Above Average") {
-                bgColor = "bg-green-100 dark:bg-green-900/30";
-                textColor = "text-green-800 dark:text-green-200";
-              } else if (range.label === "Excellent") {
-                bgColor = "bg-cyan-100 dark:bg-cyan-900/30";
-                textColor = "text-cyan-800 dark:text-cyan-200";
-              } else if (range.label === "Superior") {
-                bgColor = "bg-indigo-100 dark:bg-indigo-900/30";
-                textColor = "text-indigo-800 dark:text-indigo-200";
-              }
+              // Blue scale for all categories - intensity increases with category
+              const baseIntensity = 100 + (index * 100);
+              // Ensure we don't exceed tailwind's color scale (100-900)
+              const lightModeIntensity = Math.min(baseIntensity, 500);
+              const darkModeIntensity = Math.max(900 - (index * 100), 600);
               
               const isCurrentRange = cardioData.current >= range.min && cardioData.current <= range.max;
               
               return (
                 <div 
                   key={`legend-${index}`} 
-                  className={`${bgColor} ${textColor} px-2 py-0.5 rounded text-xs ${isCurrentRange ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''}`}
+                  className={`flex flex-col items-center ${isCurrentRange ? 'ring-2 ring-blue-500 dark:ring-blue-400 rounded' : ''}`}
                 >
-                  {range.label} ({range.min}-{range.max})
+                  <div className={`px-3 py-1 rounded-t text-xs font-medium 
+                    bg-blue-${lightModeIntensity}/10 dark:bg-blue-${darkModeIntensity}/30
+                    text-blue-800 dark:text-blue-200`}>
+                    {range.label}
+                  </div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 px-1">
+                    {range.min}-{range.max}
+                  </div>
                 </div>
               );
             })}

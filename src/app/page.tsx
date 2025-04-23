@@ -104,7 +104,13 @@ export default function Home() {
                   className="h-full bg-blue-600 dark:bg-blue-500"
                 />
               </div>
+              <div className="mt-2 text-xs text-right italic text-slate-500 dark:text-slate-400">
+                Total plan: 91 runs covering {formatNumber(totalGoalDistance)} km
+              </div>
             </div>
+            
+            {/* Cardio Fitness Section */}
+            <CardioFitness cardioData={cardioData} />
             
             {/* Upcoming Runs */}
             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 border border-slate-200 dark:border-slate-700">
@@ -115,9 +121,6 @@ export default function Home() {
                 maxRuns={6} 
               />
             </div>
-            
-            {/* Cardio Fitness Section */}
-            <CardioFitness cardioData={cardioData} />
             
             {/* Motivational Section */}
             <MotivationalSection />
