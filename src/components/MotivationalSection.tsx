@@ -57,7 +57,11 @@ const quotes = [
   }
 ]
 
-const MotivationalSection: React.FC = () => {
+interface MotivationalSectionProps {
+  compact?: boolean;
+}
+
+const MotivationalSection: React.FC<MotivationalSectionProps> = ({ compact = false }) => {
   const [currentQuote, setCurrentQuote] = useState(quotes[0])
   const [key, setKey] = useState(0) // For animation triggering
   
@@ -72,6 +76,36 @@ const MotivationalSection: React.FC = () => {
     return () => clearInterval(interval)
   }, [])
   
+  if (compact) {
+    return (
+      <div className="flex items-center">
+        {/* Greek vase icon - smaller in compact mode */}
+        <div className="w-10 h-10 mr-3 flex-shrink-0">
+          <div 
+            className="w-full h-full bg-contain bg-center bg-no-repeat opacity-80" 
+            style={{ backgroundImage: "url('./images/greek-vase.png')" }}
+          />
+        </div>
+        
+        <div className="flex-1">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={key}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.5 }}
+            >
+              <p className="text-sm italic text-blue-600 dark:text-blue-400 font-medium">"{currentQuote.text}"</p>
+              <p className="text-slate-600 dark:text-slate-400 text-xs">— {currentQuote.author}</p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+    )
+  }
+  
+  // Standard (non-compact) version
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 border border-slate-200 dark:border-slate-700">
       <h2 className="text-lg font-semibold mb-3 text-slate-800 dark:text-slate-200">Motivation</h2>

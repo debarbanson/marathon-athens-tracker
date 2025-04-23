@@ -67,19 +67,27 @@ export default function Home() {
       </div>
       
       {/* Main content area */}
-      <div className={`flex ${isMobile ? 'flex-col' : 'h-[calc(100vh-72px)]'}`}>
-        {/* Map section - full width on mobile, 2/3 on desktop */}
-        <div className={`${isMobile ? 'w-full h-[60vh]' : 'w-2/3 h-full'} relative`}>
-          <MapSection 
-            totalDistance={totalDistance} 
-            totalGoalDistance={totalGoalDistance}
-            progressPercentage={progressPercentage}
-            showProgressBar={false} // Hide the progress bar on the map since we'll show it in the content section
-          />
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
+        {/* Left Content Column - Map and Motivational Section */}
+        <div className={`${isMobile ? 'w-full' : 'w-2/3'} flex flex-col`}>
+          {/* Map section */}
+          <div className={`${isMobile ? 'h-[60vh]' : 'h-[calc(100vh-150px)]'} relative`}>
+            <MapSection 
+              totalDistance={totalDistance} 
+              totalGoalDistance={totalGoalDistance}
+              progressPercentage={progressPercentage}
+              showProgressBar={false} // Hide the progress bar on the map since we'll show it in the content section
+            />
+          </div>
+          
+          {/* Motivational section below map - more compact */}
+          <div className="bg-white dark:bg-slate-800 shadow-sm border-t border-slate-200 dark:border-slate-700 py-3 px-4">
+            <MotivationalSection compact={true} />
+          </div>
         </div>
         
-        {/* Content section - full width on mobile, 1/3 on desktop */}
-        <div className={`${isMobile ? 'w-full overflow-y-auto' : 'w-1/3 h-full'} bg-white dark:bg-slate-800 shadow-lg z-10 flex flex-col`}>
+        {/* Right Content Column - Stats and Schedule */}
+        <div className={`${isMobile ? 'w-full overflow-y-auto' : 'w-1/3 h-[calc(100vh-72px)]'} bg-white dark:bg-slate-800 shadow-lg z-10 flex flex-col`}>
           <div className="flex-1 overflow-y-auto p-5 space-y-6">
             {/* Stats Panel */}
             <StatsPanel 
@@ -121,9 +129,6 @@ export default function Home() {
                 maxRuns={6} 
               />
             </div>
-            
-            {/* Motivational Section */}
-            <MotivationalSection />
           </div>
         </div>
       </div>
