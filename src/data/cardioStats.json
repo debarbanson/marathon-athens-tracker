@@ -1,0 +1,20 @@
+{
+  "currentAge": 41,
+  "gender": "male",
+  "current": 36.1,
+  "referenceRanges": [
+    { "label": "Poor", "min": 0, "max": 31.4 },
+    { "label": "Below Average", "min": 31.5, "max": 35.4 },
+    { "label": "Average", "min": 35.5, "max": 40.9 },
+    { "label": "Above Average", "min": 41.0, "max": 45.9 },
+    { "label": "Excellent", "min": 46.0, "max": 52.4 },
+    { "label": "Superior", "min": 52.5, "max": 100 }
+  ],
+  "history": [
+    { "date": "2023-04-13", "value": 34.0 },
+    { "date": "2023-04-17", "value": 34.0 },
+    { "date": "2023-04-18", "value": 34.2 },
+    { "date": "2023-04-20", "value": 35.7 },
+    { "date": "2023-04-23", "value": 36.1 }
+  ]
+} 

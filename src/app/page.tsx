@@ -7,13 +7,15 @@ import {
   StatsPanel, 
   UpcomingRuns, 
   MotivationalSection, 
-  ThemeToggle 
+  ThemeToggle,
+  CardioFitness
 } from '@/components'
 
 // Import real data from JSON files
 import statsData from '@/data/stats.json'
 import upcomingRunsData from '@/data/upcomingRuns.json'
 import completedRunsData from '@/data/completedRuns.json'
+import cardioData from '@/data/cardioStats.json'
 
 // Format number with Dutch-style formatting: period for thousands, comma for decimals
 const formatNumber = (num: number): string => {
@@ -55,7 +57,7 @@ export default function Home() {
   }, [])
   
   return (
-    <main className="flex flex-col w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen">
+    <>
       {/* Title Bar - Always on top */}
       <div className="w-full sticky top-0 bg-white dark:bg-slate-800 shadow-md z-20 py-4 px-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
         <h1 className="text-2xl md:text-3xl font-serif font-medium text-slate-800 dark:text-slate-100">
@@ -114,11 +116,14 @@ export default function Home() {
               />
             </div>
             
+            {/* Cardio Fitness Section */}
+            <CardioFitness cardioData={cardioData} />
+            
             {/* Motivational Section */}
             <MotivationalSection />
           </div>
         </div>
       </div>
-    </main>
+    </>
   )
 } 

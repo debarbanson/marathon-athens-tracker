@@ -4,4 +4,5 @@ export { default as StatsPanel } from './StatsPanel';
 export { default as UpcomingRuns } from './UpcomingRuns';
 export { default as MotivationalSection } from './MotivationalSection';
 export { default as ThemeToggle } from './ThemeToggle';
-export { default as Tabs } from './Tabs'; 
+export { default as Tabs } from './Tabs';
+export { default as CardioFitness } from './CardioFitness'; 
