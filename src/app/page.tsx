@@ -70,6 +70,11 @@ export default function Home() {
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
         {/* Left Content Column - Map and Motivational Section */}
         <div className={`${isMobile ? 'w-full' : 'w-2/3'} flex flex-col`}>
+          {/* Motivational section above map */}
+          <div className="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700 py-2 px-4">
+            <MotivationalSection compact={true} />
+          </div>
+          
           {/* Map section */}
           <div className={`${isMobile ? 'h-[60vh]' : 'flex-1'} relative`}>
             <MapSection 
@@ -78,11 +83,6 @@ export default function Home() {
               progressPercentage={progressPercentage}
               showProgressBar={false} // Hide the progress bar on the map since we'll show it in the content section
             />
-            
-            {/* Motivational section above map attribution */}
-            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-slate-200 dark:border-slate-700 py-2 px-4 absolute bottom-8 left-0 right-0">
-              <MotivationalSection compact={true} />
-            </div>
           </div>
         </div>
         
