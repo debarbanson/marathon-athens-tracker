@@ -71,24 +71,24 @@ export default function Home() {
         {/* Left Content Column - Map and Motivational Section */}
         <div className={`${isMobile ? 'w-full' : 'w-2/3'} flex flex-col`}>
           {/* Map section */}
-          <div className={`${isMobile ? 'h-[60vh]' : 'h-[calc(100vh-150px)]'} relative`}>
+          <div className={`${isMobile ? 'h-[60vh]' : 'flex-1'} relative`}>
             <MapSection 
               totalDistance={totalDistance} 
               totalGoalDistance={totalGoalDistance}
               progressPercentage={progressPercentage}
               showProgressBar={false} // Hide the progress bar on the map since we'll show it in the content section
             />
-          </div>
-          
-          {/* Motivational section below map - more compact */}
-          <div className="bg-white dark:bg-slate-800 shadow-sm border-t border-slate-200 dark:border-slate-700 py-3 px-4">
-            <MotivationalSection compact={true} />
+            
+            {/* Motivational section above map attribution */}
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-slate-200 dark:border-slate-700 py-2 px-4 absolute bottom-8 left-0 right-0">
+              <MotivationalSection compact={true} />
+            </div>
           </div>
         </div>
         
         {/* Right Content Column - Stats and Schedule */}
-        <div className={`${isMobile ? 'w-full overflow-y-auto' : 'w-1/3 h-[calc(100vh-72px)]'} bg-white dark:bg-slate-800 shadow-lg z-10 flex flex-col`}>
-          <div className="flex-1 overflow-y-auto p-5 space-y-6">
+        <div className={`${isMobile ? 'w-full' : 'w-1/3'} bg-white dark:bg-slate-800 shadow-lg z-10`}>
+          <div className="p-5 space-y-6">
             {/* Stats Panel */}
             <StatsPanel 
               totalDistance={totalDistance}
