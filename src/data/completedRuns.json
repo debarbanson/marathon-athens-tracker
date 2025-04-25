@@ -1,5 +1,21 @@
 [
   {
+    "id": 8,
+    "date": "2025-04-25T05:40:53Z",
+    "displayDate": "Friday, April 25",
+    "type": "Medium Run",
+    "distance": 6.04,
+    "plannedDistance": 6,
+    "tag": "medium",
+    "duration": "32:23",
+    "pace": "5:22",
+    "predictedTime": "33:12",
+    "predictedPace": "5:32",
+    "overachievedDistance": true,
+    "overachievedPace": true,
+    "stravaId": 14278946643
+  },
+  {
     "id": 7,
     "date": "2025-04-23T05:12:22Z",
     "displayDate": "Wednesday, April 23",
