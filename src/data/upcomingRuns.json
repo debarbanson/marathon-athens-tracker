@@ -1,23 +1,5 @@
 [
   {
-    "id": 6,
-    "date": "30-04-2025",
-    "displayDate": "Wednesday, Apr 30",
-    "type": "Short Run",
-    "distance": 4,
-    "tag": "short",
-    "predictedTime": "22:02"
-  },
-  {
-    "id": 7,
-    "date": "02-05-2025",
-    "displayDate": "Friday, May 02",
-    "type": "Short Run",
-    "distance": 5,
-    "tag": "short",
-    "predictedTime": "27:32"
-  },
-  {
     "id": 8,
     "date": "04-05-2025",
     "displayDate": "Sunday, May 04",
