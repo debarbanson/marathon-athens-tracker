@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import upcomingRunsData from '@/data/upcomingRuns.json'
 
 interface CardioFitnessProps {
   cardioData: {
@@ -64,12 +65,30 @@ const CardioFitness: React.FC<CardioFitnessProps> = ({ cardioData }) => {
   // Use 100% width minus a small padding
   const chartWidth = isMobile ? '100%' : '100%';
   
-  // Calculate chart points
+  // Get next upcoming run date from upcomingRunsData
+  const getNextRunDate = () => {
+    if (upcomingRunsData && upcomingRunsData.length > 0) {
+      // Parse the date in "DD-MM-YYYY" format
+      const dateParts = upcomingRunsData[0].date.split('-');
+      // Convert to YYYY-MM-DD for consistent formatting with cardioData
+      return `2023-${dateParts[1]}-${dateParts[0]}`;
+    }
+    return null;
+  };
+  
+  // Calculate chart points including the next run date
   const getChartPoints = () => {
     const history = [...cardioData.history];
+    const nextRunDate = getNextRunDate();
+    
+    // If we have a next run date, add it as a projected point
+    const extendedHistory = [...history];
+    if (nextRunDate) {
+      extendedHistory.push({ date: nextRunDate, value: cardioData.current });
+    }
     
     // Find min and max values with padding
-    const allValues = history.map(item => item.value);
+    const allValues = extendedHistory.map(item => item.value);
     const minValue = Math.floor(Math.min(...allValues) - 1);
     const maxValue = Math.ceil(Math.max(...allValues) + 1);
     const valueRange = maxValue - minValue;
@@ -79,16 +98,16 @@ const CardioFitness: React.FC<CardioFitnessProps> = ({ cardioData }) => {
     const actualWidth = chartElement?.clientWidth || 300;
     
     // Convert to chart points
-    return history.map((item, index) => {
-      const x = (index / (history.length - 1)) * actualWidth;
+    return extendedHistory.map((item, index) => {
+      const x = (index / (extendedHistory.length - 1)) * actualWidth;
       // Invert Y because SVG coordinates go from top to bottom
       const y = chartHeight - ((item.value - minValue) / valueRange) * chartHeight;
-      return { x, y, value: item.value, date: item.date };
+      return { x, y, value: item.value, date: item.date, isProjected: index === extendedHistory.length - 1 && nextRunDate === item.date };
     });
   };
   
   // Update chart points when component mounts or resizes
-  const [chartPoints, setChartPoints] = useState<Array<{x: number, y: number, value: number, date: string}>>([]);
+  const [chartPoints, setChartPoints] = useState<Array<{x: number, y: number, value: number, date: string, isProjected?: boolean}>>([]);
   const [svgWidth, setSvgWidth] = useState(300);
   
   useEffect(() => {
@@ -99,19 +118,32 @@ const CardioFitness: React.FC<CardioFitnessProps> = ({ cardioData }) => {
         setSvgWidth(actualWidth);
         
         const history = [...cardioData.history];
+        const nextRunDate = getNextRunDate();
+        
+        // If we have a next run date, add it as a projected point
+        const extendedHistory = [...history];
+        if (nextRunDate) {
+          extendedHistory.push({ date: nextRunDate, value: cardioData.current });
+        }
         
         // Find min and max values with padding
-        const allValues = history.map(item => item.value);
+        const allValues = extendedHistory.map(item => item.value);
         const minValue = Math.floor(Math.min(...allValues) - 1);
         const maxValue = Math.ceil(Math.max(...allValues) + 1);
         const valueRange = maxValue - minValue;
         
         // Convert to chart points
-        const points = history.map((item, index) => {
-          const x = (index / (history.length - 1)) * actualWidth;
+        const points = extendedHistory.map((item, index) => {
+          const x = (index / (extendedHistory.length - 1)) * actualWidth;
           // Invert Y because SVG coordinates go from top to bottom
           const y = chartHeight - ((item.value - minValue) / valueRange) * chartHeight;
-          return { x, y, value: item.value, date: item.date };
+          return { 
+            x, 
+            y, 
+            value: item.value, 
+            date: item.date, 
+            isProjected: index === extendedHistory.length - 1 && nextRunDate === item.date 
+          };
         });
         
         setChartPoints(points);
@@ -175,7 +207,14 @@ const CardioFitness: React.FC<CardioFitnessProps> = ({ cardioData }) => {
         
         {/* Line Chart */}
         <div id="vo2max-chart" className="relative mb-2 mt-2 w-full">
-          <svg width="100%" height={chartHeight} className="overflow-visible" preserveAspectRatio="none">
+          <motion.svg 
+            width="100%" 
+            height={chartHeight} 
+            className="overflow-visible" 
+            preserveAspectRatio="none"
+            initial="initial"
+            animate="animate"
+          >
             {/* Background grid lines - horizontal */}
             {[0, 1, 2, 3].map((i) => (
               <line 
@@ -209,7 +248,7 @@ const CardioFitness: React.FC<CardioFitnessProps> = ({ cardioData }) => {
             </defs>
             
             {/* Line Path */}
-            <path
+            <motion.path
               d={createLinePath()}
               fill="none"
               stroke="#3b82f6"
@@ -217,28 +256,46 @@ const CardioFitness: React.FC<CardioFitnessProps> = ({ cardioData }) => {
               strokeLinecap="round"
               strokeLinejoin="round"
               className="dark:stroke-blue-400"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             />
             
             {/* Data Points */}
             {chartPoints.map((point, i) => (
-              <circle
+              <motion.circle
                 key={`point-${i}`}
                 cx={point.x}
                 cy={point.y}
-                r="4"
-                fill="white"
-                stroke="#3b82f6"
-                strokeWidth="2"
-                className="dark:fill-slate-800 dark:stroke-blue-400"
+                r={point.isProjected ? "3" : "4"}
+                fill={point.isProjected ? "transparent" : "white"}
+                stroke={point.isProjected ? "#3b82f6" : "#3b82f6"}
+                strokeWidth={point.isProjected ? "1.5" : "2"}
+                strokeDasharray={point.isProjected ? "2 2" : "0"}
+                className={point.isProjected ? 
+                  "dark:fill-transparent dark:stroke-blue-400" :
+                  "dark:fill-slate-800 dark:stroke-blue-400"}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: i * 0.05, duration: 0.2 }}
               />
             ))}
-          </svg>
+          </motion.svg>
           
           {/* X-axis labels (dates) */}
           <div className="flex justify-between mt-1 text-xs text-slate-500 dark:text-slate-400">
             {chartPoints.map((point, i) => (
-              <div key={`label-${i}`} style={{ position: 'absolute', left: `${(i / (chartPoints.length - 1)) * 100}%`, transform: 'translateX(-50%)' }}>
+              <div 
+                key={`label-${i}`} 
+                style={{ 
+                  position: 'absolute', 
+                  left: `${(i / (chartPoints.length - 1)) * 100}%`, 
+                  transform: 'translateX(-50%)' 
+                }}
+                className={point.isProjected ? "italic text-blue-500 dark:text-blue-400" : ""}
+              >
                 {formatDate(point.date)}
+                {point.isProjected && <span className="ml-0.5">*</span>}
               </div>
             ))}
           </div>
@@ -277,6 +334,7 @@ const CardioFitness: React.FC<CardioFitnessProps> = ({ cardioData }) => {
         
         <div className="mt-3 text-xs text-center italic text-slate-500 dark:text-slate-400">
           VO₂max is the maximum rate of oxygen your body can use during exercise.
+          {chartPoints.some(p => p.isProjected) && <span className="block mt-1">* Next scheduled run date</span>}
         </div>
       </div>
     </div>
